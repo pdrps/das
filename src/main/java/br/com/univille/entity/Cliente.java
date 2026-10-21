@@ -1,7 +1,7 @@
-package br.com.sistemas.das.entity;
+package br.com.univille.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.entity;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,13 +16,13 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = dalse, lenght=100)
+    @Column(nullable = false, length = 100)
     private String nome;
 
-    @Column(nullable = false, unique = true, lenght = 120)
+    @Column(nullable = false, unique = true, length = 120)
     private String email;
 
-    @Column(lenght = 20)
+    @Column(length = 20)
     private String telefone;
 
     public Cliente(){}
@@ -37,7 +37,7 @@ public class Cliente {
     public String getNome() {return nome;}
     public void setNome(String nome) {this.nome=nome;}
     public String getEmail() {return email;}
-    public void setEmail(String telefone) {this.email = email}
+    public void setEmail(String telefone) {this.email = email;}
     public String getTelefone() {return telefone;}
-    public void setTelefone(String telefone) {this.email = telefone}
+    public void setTelefone(String telefone) {this.email = telefone;}
     }
