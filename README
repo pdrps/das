@@ -1,32 +1,60 @@
 # Sistema de Chamados - API REST
 
-API em Java 21 com Spring Boot, Spring Data JPA e H2, organizada em camadas
-(Controller, Service, Repository, Entity, DTO).
+API REST em **Java 21** com **Spring Boot**, **Spring Data JPA** e **H2**, organizada em camadas (Controller, Service, Repository, Entity e DTO).
+
+## Índice
+
+- [Como executar](#como-executar)
+- [Rotas](#rotas)
+- [Popular o banco pelo Postman](#popular-o-banco-pelo-postman)
+- [Testar as rotas PATCH de chamados](#testar-as-rotas-patch-de-chamados)
+
+---
 
 ## Como executar
 
-EXECUTAR NO TERMINAL:
+Na pasta raiz do projeto (onde ficam o `pom.xml` e o `mvnw`), execute no terminal:
 
-./mvnw spring-boot:run       
+```bash
+# Linux / macOS
+./mvnw spring-boot:run
+```
 
+```powershell
+# Windows (PowerShell)
+.\mvnw.cmd spring-boot:run
+```
 
 A aplicação sobe em `http://localhost:8080`.
 
+---
+
 ## Rotas
 
-| Recurso   | Rota          | Métodos                      |
-|-----------|---------------|------------------------------|
-| Clientes  | `/clientes`   | POST, GET, GET/{id}, PUT, DELETE |
-| Técnicos  | `/tecnicos`   | POST, GET, GET/{id}, PUT, DELETE |
-| Categorias| `/categorias` | POST, GET, GET/{id}, PUT, DELETE |
-| Chamados  | `/chamados`   | POST, GET, GET/{id}, PUT, DELETE |
+| Recurso    | Rota          | Métodos                                  |
+|------------|---------------|------------------------------------------|
+| Clientes   | `/clientes`   | `POST`, `GET`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}` |
+| Técnicos   | `/tecnicos`   | `POST`, `GET`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}` |
+| Categorias | `/categorias` | `POST`, `GET`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}` |
+| Chamados   | `/chamados`   | `POST`, `GET`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}` |
 
+Rotas de ação em chamados:
+
+| Método  | Rota                        | Ação                          |
+|---------|-----------------------------|-------------------------------|
+| `PATCH` | `/chamados/{id}/atribuir`   | Atribui um técnico ao chamado |
+| `PATCH` | `/chamados/{id}/status`     | Altera o status do chamado    |
+
+---
 
 ## Popular o banco pelo Postman
 
-Com a aplicação rodando, envie as requisições abaixo **nesta ordem**.
+Com a aplicação rodando, envie as requisições abaixo **nesta ordem**, pois o chamado depende das outras três tabelas.
+
 Em todas: método **POST**, aba **Body** → **raw** → **JSON**.
-O banco H2 é em memória, então repita o processo sempre que reiniciar a aplicação.
+
+> [!NOTE]
+> O banco H2 é em memória. Os dados são perdidos a cada reinicialização, então repita o processo sempre que reiniciar a aplicação.
 
 ### 1. Clientes
 
@@ -47,6 +75,7 @@ O banco H2 é em memória, então repita o processo sempre que reiniciar a aplic
   "telefone": "47922222222"
 }
 ```
+
 ### 2. Categorias
 
 `POST http://localhost:8080/categorias`
@@ -89,7 +118,7 @@ O banco H2 é em memória, então repita o processo sempre que reiniciar a aplic
 
 `POST http://localhost:8080/chamados`
 
-Chamado sem técnico:
+**Chamado sem técnico:**
 
 ```json
 {
@@ -101,7 +130,7 @@ Chamado sem técnico:
 }
 ```
 
-Chamado com técnico:
+**Chamado com técnico:**
 
 ```json
 {
@@ -114,11 +143,16 @@ Chamado com técnico:
 }
 ```
 
-Resultado esperado em todas as requisições: **201 Created**. Nos chamados, o
-`status` volta como `ABERTO` e a `dataAbertura` vem preenchida automaticamente.
+**Resultado esperado em todas as requisições:** `201 Created`.
+Nos chamados, o `status` volta como `ABERTO` e a `dataAbertura` vem preenchida automaticamente.
 
+---
 
 ## Testar as rotas PATCH de chamados
+
+Pré-requisito: banco populado conforme a seção anterior, com os chamados 1 e 2 em status `ABERTO`.
+
+Em todas: método **PATCH**, aba **Body** → **raw** → **JSON**. Execute **nesta ordem**.
 
 ### 1. Atribuir técnico
 
@@ -130,16 +164,27 @@ Resultado esperado em todas as requisições: **201 Created**. Nos chamados, o
 }
 ```
 
-Esperado: **200 OK**, com `tecnicoId` e `tecnicoNome` preenchidos.
+**Esperado:** `200 OK`, com `tecnicoId` e `tecnicoNome` preenchidos.
 
 ### 2. Alterar status: transições válidas (chamado 1)
 
 `PATCH http://localhost:8080/chamados/1/status`
 
+Envie um corpo por vez:
+
 ```json
 { "status": "EM_ATENDIMENTO" }
 ```
-Esperado nas três: **200 OK**, com o novo `status` na resposta.
+
+```json
+{ "status": "AGUARDANDO_CLIENTE" }
+```
+
+```json
+{ "status": "EM_ATENDIMENTO" }
+```
+
+**Esperado nas três:** `200 OK`, com o novo `status` na resposta.
 
 ### 3. Fechar o chamado (chamado 1)
 
@@ -150,10 +195,35 @@ Esperado nas três: **200 OK**, com o novo `status` na resposta.
   "status": "FECHADO"
 }
 ```
-Esperado: **200 OK**, com `status` FECHADO e `dataFechamento` preenchida.
+
+**Esperado:** `200 OK`, com `status` `FECHADO` e `dataFechamento` preenchida.
 
 ### 4. Alterar chamado fechado (chamado 1)
 
-Repita o passo 3 ou tente atribuir de novo
+Repita a requisição do passo 3, ou tente atribuir um técnico de novo:
 
-Esperado: **409** (“Chamado fechado não pode ser alterado”).
+`PATCH http://localhost:8080/chamados/1/atribuir`
+
+```json
+{
+  "tecnicoId": 1
+}
+```
+
+**Esperado:** `409 Conflict`, com a mensagem "Chamado fechado não pode ser alterado".
+
+> [!IMPORTANT]
+> O passo 4 só funciona depois do passo 3, porque depende do chamado 1 estar fechado.
+
+---
+
+## Resumo dos resultados esperados
+
+| Situação                              | Status HTTP        |
+|---------------------------------------|--------------------|
+| Criação de registro                   | `201 Created`      |
+| Consulta, atualização e PATCH válidos | `200 OK`           |
+| Exclusão                              | `204 No Content`   |
+| Dados inválidos                       | `400 Bad Request`  |
+| Registro inexistente                  | `404 Not Found`    |
+| Regra de negócio violada              | `409 Conflict`     |
