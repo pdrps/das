@@ -50,25 +50,16 @@ Em todas: método **POST**, aba **Body** → **raw** → **JSON**.
 > [!NOTE]
 > O banco H2 é em memória. Os dados são perdidos a cada reinicialização, então repita o processo sempre que reiniciar a aplicação.
 ```
-### 1. Clientes
+### 1. Clientes (ids 1 a 5)
 
 `POST http://localhost:8080/clientes`
 
 ```json
-{
-  "nome": "Maria Teste",
-  "email": "maria@teste.com",
-  "telefone": "47911111111"
-}
-
-```
-
-```json
-{
-  "nome": "João Teste",
-  "email": "joao@teste.com",
-  "telefone": "47922222222"
-}
+{ "nome": "Maria Teste", "email": "maria@teste.com", "telefone": "47911111111" }
+{ "nome": "João Teste", "email": "joao@teste.com", "telefone": "47922222222" }
+{ "nome": "Ana Costa", "email": "ana.costa@teste.com", "telefone": "47933333333" }
+{ "nome": "Bruno Alves", "email": "bruno@teste.com", "telefone": "47944444444" }
+{ "nome": "Carla Dias", "email": "carla@teste.com", "telefone": "47955555555" }
 ```
 
 ### 2. Categorias
