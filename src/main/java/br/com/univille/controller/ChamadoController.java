@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.univille.dto.AlterarStatusRequest;
 import br.com.univille.dto.AtribuirTecnicoRequest;
+import br.com.univille.dto.ChamadoDetalheResponse;
 import br.com.univille.dto.ChamadoRequest;
 import br.com.univille.dto.ChamadoResponse;
+import br.com.univille.dto.ComentarioRequest;
+import br.com.univille.dto.ComentarioResponse;
 import br.com.univille.entity.Prioridade;
 import br.com.univille.entity.StatusChamado;
 import br.com.univille.service.ChamadoService;
@@ -48,14 +51,14 @@ public class ChamadoController {
     public Page<ChamadoResponse> listar(
         @RequestParam(required = false) StatusChamado status,
         @RequestParam(required = false) Prioridade prioridade,
-         @RequestParam(required = false) Long clienteId,
+        @RequestParam(required = false) Long clienteId,
         @PageableDefault(size = 10, sort = "dataAbertura", direction = Sort.Direction.DESC)
         Pageable pageable) {
         return service.listar(status, prioridade, clienteId, pageable);
     }
 
     @GetMapping("/{id}")
-    public ChamadoResponse buscar(@PathVariable Long id) {
+    public ChamadoDetalheResponse buscar(@PathVariable Long id) {
         return service.buscar(id);
     }
 
@@ -65,8 +68,6 @@ public class ChamadoController {
         @Valid @RequestBody ChamadoRequest dto) {
         return service.atualizar(id, dto);
     }
-
-    
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
@@ -78,13 +79,23 @@ public class ChamadoController {
     public ChamadoResponse atribuir(
         @PathVariable Long id,
         @Valid @RequestBody AtribuirTecnicoRequest dto) {
-            return service.atribuir(id, dto);
-        }
+        return service.atribuir(id, dto);
+    }
 
     @PatchMapping("/{id}/status")
     public ChamadoResponse alterarStatus(
         @PathVariable Long id,
         @Valid @RequestBody AlterarStatusRequest dto) {
-            return service.alterarStatus(id, dto);
-        }        
+        return service.alterarStatus(id, dto);
+    }
+
+    @PostMapping("/{id}/comentarios")
+    public ResponseEntity<ComentarioResponse> comentar(
+        @PathVariable Long id,
+        @Valid @RequestBody ComentarioRequest dto) {
+        ComentarioResponse criado = service.comentar(id, dto);
+        return ResponseEntity
+                .created(URI.create("/chamados/" + id + "/comentarios/" + criado.id()))
+                .body(criado);
+    }
 }
