@@ -49,7 +49,7 @@ Em todas: método **POST**, aba **Body** → **raw** → **JSON**.
 
 > [!NOTE]
 > O banco H2 é em memória. Os dados são perdidos a cada reinicialização, então repita o processo sempre que reiniciar a aplicação.
-
+```
 ### 1. Clientes
 
 `POST http://localhost:8080/clientes`
