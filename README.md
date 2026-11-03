@@ -16,14 +16,8 @@ API REST em **Java 21** com **Spring Boot**, **Spring Data JPA** e **H2**, organ
 Na pasta raiz do projeto (onde ficam o `pom.xml` e o `mvnw`), execute no terminal:
 
 ```bash
-# Linux / macOS
 ./mvnw spring-boot:run
-```
 
-```powershell
-# Windows (PowerShell)
-.\mvnw.cmd spring-boot:run
-```
 
 A aplicação sobe em `http://localhost:8080`.
 
