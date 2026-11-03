@@ -1,8 +1,9 @@
 package br.com.univille.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import br.com.univille.dto.ChamadoResponse;
 import br.com.univille.entity.Categoria;
 import br.com.univille.entity.Chamado;
 import br.com.univille.entity.Cliente;
+import br.com.univille.entity.Prioridade;
 import br.com.univille.entity.StatusChamado;
 import br.com.univille.entity.Tecnico;
 import br.com.univille.exception.RecursoNaoEncontradoException;
@@ -58,8 +60,19 @@ public class ChamadoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChamadoResponse> listar() {
-        return repository.findAll().stream().map(ChamadoResponse::de).toList();
+    public Page<ChamadoResponse> listar(StatusChamado status, Prioridade prioridade,
+                                    Long clienteId, Pageable pageable) {
+    return repository.filtrar(status, prioridade, clienteId, pageable)
+            .map(ChamadoResponse::de);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ChamadoResponse> listarPorCliente(Long clienteId, Pageable pageable) {
+        if (!clienteRepository.existsById(clienteId)) {
+         throw new RecursoNaoEncontradoException("Cliente não encontrado com o id " + clienteId);
+        }
+    return repository.filtrar(null, null, clienteId, pageable)
+            .map(ChamadoResponse::de);
     }
 
     @Transactional(readOnly = true)
