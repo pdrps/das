@@ -61,6 +61,9 @@ Em todas: método **POST**, aba **Body** → **raw** → **JSON**.
   "telefone": "47911111111"
 }
 
+```
+
+```json
 {
   "nome": "João Teste",
   "email": "joao@teste.com",
