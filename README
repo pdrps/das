@@ -7,7 +7,7 @@ API em Java 21 com Spring Boot, Spring Data JPA e H2, organizada em camadas
 
 EXECUTAR NO TERMINAL:
 
-./mvnw spring-boot:run          # Linux/macOS
+./mvnw spring-boot:run       
 
 
 A aplicação sobe em `http://localhost:8080`.
