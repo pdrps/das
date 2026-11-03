@@ -5,10 +5,10 @@ API em Java 21 com Spring Boot, Spring Data JPA e H2, organizada em camadas
 
 ## Como executar
 
-```bash
-.\mvnw.cmd spring-boot:run      # Windows (PowerShell)
+EXECUTAR NO TERMINAL:
+
 ./mvnw spring-boot:run          # Linux/macOS
-```
+
 
 A aplicação sobe em `http://localhost:8080`.
 
@@ -21,10 +21,77 @@ A aplicação sobe em `http://localhost:8080`.
 | Categorias| `/categorias` | POST, GET, GET/{id}, PUT, DELETE |
 | Chamados  | `/chamados`   | POST, GET, GET/{id}, PUT, DELETE |
 
-Exemplo de teste (criar chamado):
+
+## Popular o banco pelo Postman
+
+Com a aplicação rodando, envie as requisições abaixo **nesta ordem**.
+Em todas: método **POST**, aba **Body** → **raw** → **JSON**.
+O banco H2 é em memória, então repita o processo sempre que reiniciar a aplicação.
+
+### 1. Clientes
+
+`POST http://localhost:8080/clientes`
 
 ```json
-POST /chamados
+{
+  "nome": "Maria Teste",
+  "email": "maria@teste.com",
+  "telefone": "47911111111"
+}
+```
+
+```json
+{
+  "nome": "João Teste",
+  "email": "joao@teste.com",
+  "telefone": "47922222222"
+}
+```
+### 2. Categorias
+
+`POST http://localhost:8080/categorias`
+
+```json
+{
+  "nome": "Hardware",
+  "descricao": "Problemas com equipamentos físicos"
+}
+```
+
+```json
+{
+  "nome": "Software",
+  "descricao": "Erros e dúvidas de programas e sistemas"
+}
+```
+
+### 3. Técnicos
+
+`POST http://localhost:8080/tecnicos`
+
+```json
+{
+  "nome": "Carlos Lima",
+  "email": "carlos@teste.com",
+  "perfil": "TECNICO"
+}
+```
+
+```json
+{
+  "nome": "Paula Admin",
+  "email": "paula@teste.com",
+  "perfil": "ADMIN"
+}
+```
+
+### 4. Chamados
+
+`POST http://localhost:8080/chamados`
+
+Chamado sem técnico:
+
+```json
 {
   "titulo": "Notebook não liga",
   "descricao": "Sem sinal de energia",
@@ -34,28 +101,18 @@ POST /chamados
 }
 ```
 
-## Console do H2
+Chamado com técnico:
 
-- URL: `http://localhost:8080/h2-console`
-- JDBC URL: `jdbc:h2:mem:dasdb`
-- Usuário: `sa` / senha em branco
-
-O banco é em memória: os dados são perdidos a cada reinicialização.
-
-## Dados de teste
-
-Rode no console do H2, **nesta ordem** (o chamado depende das outras tabelas):
-
-```sql
-INSERT INTO CLIENTES (NOME, EMAIL, TELEFONE) VALUES ('Maria Teste', 'maria@teste.com', '47911111111');
-
-INSERT INTO CATEGORIAS (NOME, DESCRICAO) VALUES ('Hardware', 'Problemas com equipamentos físicos');
-INSERT INTO CATEGORIAS (NOME, DESCRICAO) VALUES ('Software', 'Erros e dúvidas de programas e sistemas');
-
-INSERT INTO TECNICOS (NOME, EMAIL, PERFIL) VALUES ('Carlos Lima', 'carlos@teste.com', 'TECNICO');
-
-INSERT INTO CHAMADOS (TITULO, DESCRICAO, DATA_ABERTURA, PRIORIDADE, STATUS, CLIENTE_ID, CATEGORIA_ID, TECNICO_ID)
-VALUES ('Notebook não liga', 'Sem sinal de energia', CURRENT_TIMESTAMP, 'ALTA', 'ABERTO', 1, 1, 1);
-
-SELECT * FROM CHAMADOS;
+```json
+{
+  "titulo": "Sistema travando",
+  "descricao": "O programa fecha sozinho ao abrir relatórios",
+  "prioridade": "MEDIA",
+  "clienteId": 2,
+  "categoriaId": 2,
+  "tecnicoId": 1
+}
 ```
+
+Resultado esperado em todas as requisições: **201 Created**. Nos chamados, o
+`status` volta como `ABERTO` e a `dataAbertura` vem preenchida automaticamente.
