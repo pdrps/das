@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.univille.dto.AlterarStatusRequest;
+import br.com.univille.dto.AtribuirTecnicoRequest;
 import br.com.univille.dto.ChamadoRequest;
 import br.com.univille.dto.ChamadoResponse;
 import br.com.univille.service.ChamadoService;
@@ -52,9 +55,25 @@ public class ChamadoController {
         return service.atualizar(id, dto);
     }
 
+    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         service.excluir(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/atribuir")
+    public ChamadoResponse atribuir(
+        @PathVariable Long id,
+        @Valid @RequestBody AtribuirTecnicoRequest dto) {
+            return service.atribuir(id, dto);
+        }
+
+    @PatchMapping("/{id}/status")
+    public ChamadoResponse alterarStatus(
+        @PathVariable Long id,
+        @Valid @RequestBody AlterarStatusRequest dto) {
+            return service.alterarStatus(id, dto);
+        }        
 }

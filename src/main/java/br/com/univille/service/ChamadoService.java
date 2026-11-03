@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.univille.dto.AlterarStatusRequest;
+import br.com.univille.dto.AtribuirTecnicoRequest;
 import br.com.univille.dto.ChamadoRequest;
 import br.com.univille.dto.ChamadoResponse;
 import br.com.univille.entity.Categoria;
@@ -14,6 +16,7 @@ import br.com.univille.entity.Cliente;
 import br.com.univille.entity.StatusChamado;
 import br.com.univille.entity.Tecnico;
 import br.com.univille.exception.RecursoNaoEncontradoException;
+import br.com.univille.exception.RegraNegocioException;
 import br.com.univille.repository.CategoriaRepository;
 import br.com.univille.repository.ChamadoRepository;
 import br.com.univille.repository.ClienteRepository;
@@ -66,7 +69,9 @@ public class ChamadoService {
 
     @Transactional
     public ChamadoResponse atualizar(Long id, ChamadoRequest dto) {
+        
         Chamado chamado = buscarEntity(id);
+        garantirNaoFechado(chamado);
 
         chamado.setTitulo(dto.titulo());
         chamado.setDescricao(dto.descricao());
@@ -102,4 +107,46 @@ public class ChamadoService {
         return tecnicoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Técnico não encontrado com o id " + id));
     }
+
+    @Transactional
+    public ChamadoResponse atribuir(Long id, AtribuirTecnicoRequest dto) {
+        Chamado chamado = buscarEntity(id);
+        garantirNaoFechado(chamado);
+        chamado.setTecnico(buscarTecnico(dto.tecnicoId()));
+        return ChamadoResponse.de(chamado);
+    }
+
+    @Transactional
+    public ChamadoResponse alterarStatus(Long id, AlterarStatusRequest dto) {
+        Chamado chamado = buscarEntity(id);
+        garantirNaoFechado(chamado);
+
+        StatusChamado atual = chamado.getStatus();
+        StatusChamado novo = dto.status();
+            if (!transicaoPermitida(atual, novo)) {
+                throw new RegraNegocioException(
+                "Transição de " + atual + " para " + novo + " não é permitida");
+            }
+
+         chamado.setStatus(novo);
+            if (novo == StatusChamado.FECHADO) {
+                chamado.setDataFechamento(LocalDateTime.now());
+                }
+        return ChamadoResponse.de(chamado);
+}
+
+    private void garantirNaoFechado(Chamado chamado) {
+        if (chamado.getStatus() == StatusChamado.FECHADO) {
+            throw new RegraNegocioException("Chamado fechado não pode ser alterado");
+        }
+    }
+
+    private boolean transicaoPermitida(StatusChamado atual, StatusChamado novo) {
+    return switch (atual) {
+        case ABERTO -> novo == StatusChamado.EM_ATENDIMENTO || novo == StatusChamado.FECHADO;
+        case EM_ATENDIMENTO -> novo == StatusChamado.AGUARDANDO_CLIENTE || novo == StatusChamado.FECHADO;
+        case AGUARDANDO_CLIENTE -> novo == StatusChamado.EM_ATENDIMENTO || novo == StatusChamado.FECHADO;
+        case FECHADO -> false;
+    };
+}
 }
