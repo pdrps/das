@@ -116,3 +116,44 @@ Chamado com técnico:
 
 Resultado esperado em todas as requisições: **201 Created**. Nos chamados, o
 `status` volta como `ABERTO` e a `dataAbertura` vem preenchida automaticamente.
+
+
+## Testar as rotas PATCH de chamados
+
+### 1. Atribuir técnico
+
+`PATCH http://localhost:8080/chamados/1/atribuir`
+
+```json
+{
+  "tecnicoId": 1
+}
+```
+
+Esperado: **200 OK**, com `tecnicoId` e `tecnicoNome` preenchidos.
+
+### 2. Alterar status: transições válidas (chamado 1)
+
+`PATCH http://localhost:8080/chamados/1/status`
+
+```json
+{ "status": "EM_ATENDIMENTO" }
+```
+Esperado nas três: **200 OK**, com o novo `status` na resposta.
+
+### 3. Fechar o chamado (chamado 1)
+
+`PATCH http://localhost:8080/chamados/1/status`
+
+```json
+{
+  "status": "FECHADO"
+}
+```
+Esperado: **200 OK**, com `status` FECHADO e `dataFechamento` preenchida.
+
+### 4. Alterar chamado fechado (chamado 1)
+
+Repita o passo 3 ou tente atribuir de novo
+
+Esperado: **409** (“Chamado fechado não pode ser alterado”).
