@@ -1,4 +1,4 @@
-package br.com.sistemas.das.dto;
+package br.com.univille.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
