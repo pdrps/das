@@ -22,11 +22,6 @@ Na pasta raiz do projeto (onde ficam o `pom.xml` e o `mvnw`), execute no termina
 ./mvnw spring-boot:run
 ```
 
-```powershell
-# Windows (PowerShell)
-.\mvnw.cmd spring-boot:run
-```
-
 A aplicação sobe em `http://localhost:8080`.
 
 ---
@@ -214,6 +209,36 @@ Exemplos de consulta (base `http://localhost:8080`):
 > As respostas de listagem são paginadas: os chamados vêm dentro do campo `content`, junto de `totalElements` e `totalPages`.
 
 ---
+
+## Testes automatizados
+
+Os testes ficam em `src/test/java/br/com/univille/` e rodam pelo Maven, sem precisar subir a aplicação:
+
+```Terminal
+.\mvnw.cmd test
+```
+
+Resultado esperado: `BUILD SUCCESS`, com `Failures: 0` e `Errors: 0`.
+
+### Estrutura
+
+| Tipo | Anotação | O que testa | Classes |
+|------|----------|-------------|---------|
+| Repository | `@DataJpaTest` | Consultas e restrições do banco (H2 em memória, só a camada de persistência) | `ClienteRepositoryTest`, `TecnicoRepositoryTest`, `ChamadoRepositoryTest` |
+| Controller | `@WebMvcTest` | Rotas, status HTTP, validação e tratamento de erros (Service substituído por mock) | `ClienteControllerTest`, `TecnicoControllerTest`, `ChamadoControllerTest` |
+
+### O que está coberto
+
+| Cenário | Repository | Controller |
+|---------|:----------:|:----------:|
+| Criação com sucesso (`201`) | ✅ | ✅ |
+| Validação de dados (`400`) | ✅ (restrições do banco) | ✅ |
+| E-mail duplicado (`409`) | ✅ (`unique`) | ✅ |
+| Registro inexistente (`404`) | – | ✅ |
+| Perfil de técnico inválido ou ausente | ✅ | ✅ |
+| Filtros, combinação de filtros e paginação de chamados | ✅ | ✅ |
+| Comentários em ordem cronológica | ✅ | ✅ |
+| Chamado fechado não pode ser alterado (`409`) | – | ✅ |
 
 ## Resumo dos resultados esperados
 
