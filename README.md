@@ -9,6 +9,7 @@ API REST em **Java 21** com **Spring Boot**, **Spring Data JPA** e **H2**, organ
 - [Popular o banco pelo Postman](#popular-o-banco-pelo-postman)
 - [Testar as rotas PATCH de chamados](#testar-as-rotas-patch-de-chamados)
 - [Filtros, paginação e ordenação](#filtros-paginação-e-ordenação)
+- [Testes automatizados](#testes-automatizados)
 - [Resumo dos resultados esperados](#resumo-dos-resultados-esperados)
 
 ---
