@@ -225,8 +225,8 @@ Resultado esperado: `BUILD SUCCESS`, com `Failures: 0` e `Errors: 0`.
 
 | Tipo | Anotação | O que testa | Classes |
 |------|----------|-------------|---------|
-| Repository | `@DataJpaTest` | Consultas e restrições do banco (H2 em memória, só a camada de persistência) | `ClienteRepositoryTest`, `TecnicoRepositoryTest`, `ChamadoRepositoryTest` |
-| Controller | `@WebMvcTest` | Rotas, status HTTP, validação e tratamento de erros (Service substituído por mock) | `ClienteControllerTest`, `TecnicoControllerTest`, `ChamadoControllerTest` |
+| Repository | `@DataJpaTest` | Consultas e restrições do banco (H2 em memória, só a camada de persistência) | `ClienteRepositoryTest`, `TecnicoRepositoryTest`, `ChamadoRepositoryTest`,`CategoriaRepositoryTest`|
+| Controller | `@WebMvcTest` | Rotas, status HTTP, validação e tratamento de erros (Service substituído por mock) | `ClienteControllerTest`, `TecnicoControllerTest`, `ChamadoControllerTest`,`CategoriaControllerTest`|
 
 ### O que está coberto
 
