@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chamados')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Chamados</h1>
+        <a class="btn btn-primary" th:href="@{/web/chamados/novo}">Novo chamado</a>
+    </div>
+
+    <form class="row g-2 mb-4" method="get" th:action="@{/web/chamados}">
+        <div class="col-md-3">
+            <select class="form-select" name="status">
+                <option value="">Todos os status</option>
+                <option th:each="s : ${statusLista}" th:value="${s}" th:text="${s}"
+                        th:selected="${status == s}"></option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="prioridade">
+                <option value="">Todas as prioridades</option>
+                <option th:each="p : ${prioridades}" th:value="${p}" th:text="${p}"
+                        th:selected="${prioridade == p}"></option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="clienteId">
+                <option value="">Todos os clientes</option>
+                <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"
+                        th:selected="${clienteId != null and clienteId == c.id}"></option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+            <a class="btn btn-outline-secondary" th:href="@{/web/chamados}">Limpar</a>
+        </div>
+    </form>
+
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Cliente</th>
+                <th>Categoria</th>
+                <th>Técnico</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+                <th>Abertura</th>
+                <th class="text-end">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="c : ${chamados.content}">
+                <td th:text="${c.id}"></td>
+                <td th:text="${c.titulo}"></td>
+                <td th:text="${c.clienteNome}"></td>
+                <td th:text="${c.categoriaNome}"></td>
+                <td th:text="${c.tecnicoNome != null} ? ${c.tecnicoNome} : '-'"></td>
+                <td>
+                    <span class="badge" th:text="${c.prioridade}"
+                          th:classappend="${c.prioridade.name() == 'CRITICA'} ? 'text-bg-danger'
+                              : (${c.prioridade.name() == 'ALTA'} ? 'text-bg-warning'
+                              : (${c.prioridade.name() == 'MEDIA'} ? 'text-bg-info' : 'text-bg-secondary'))"></span>
+                </td>
+                <td>
+                    <span class="badge" th:text="${c.status}"
+                          th:classappend="${c.status.name() == 'ABERTO'} ? 'text-bg-primary'
+                              : (${c.status.name() == 'EM_ATENDIMENTO'} ? 'text-bg-warning'
+                              : (${c.status.name() == 'AGUARDANDO_CLIENTE'} ? 'text-bg-info' : 'text-bg-secondary'))"></span>
+                </td>
+                <td th:text="${#temporals.format(c.dataAbertura, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary"
+                       th:href="@{/web/chamados/{id}(id=${c.id})}">Detalhe</a>
+                </td>
+            </tr>
+            <tr th:if="${chamados.empty}">
+                <td colspan="9" class="text-center text-muted">Nenhum chamado encontrado.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <span class="text-muted"
+              th:text="${chamados.totalElements} + ' chamado(s) no total'"></span>
+
+        <nav th:if="${chamados.totalPages > 1}">
+            <ul class="pagination mb-0">
+                <li class="page-item" th:classappend="${chamados.first} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/web/chamados(status=${status},prioridade=${prioridade},clienteId=${clienteId},page=${chamados.number - 1})}">Anterior</a>
+                </li>
+                <li class="page-item" th:each="n : ${#numbers.sequence(0, chamados.totalPages - 1)}"
+                    th:classappend="${n == chamados.number} ? 'active'">
+                    <a class="page-link" th:text="${n + 1}"
+                       th:href="@{/web/chamados(status=${status},prioridade=${prioridade},clienteId=${clienteId},page=${n})}"></a>
+                </li>
+                <li class="page-item" th:classappend="${chamados.last} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/web/chamados(status=${status},prioridade=${prioridade},clienteId=${clienteId},page=${chamados.number + 1})}">Próxima</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+</body>
+</html>

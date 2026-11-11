@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Categoria')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4" style="max-width: 640px;">
+    <h1 class="h3 mb-4" th:text="${titulo}">Categoria</h1>
+
+    <form method="post" th:action="@{${action}}" th:object="${form}" novalidate>
+        <div class="mb-3">
+            <label class="form-label" for="nome">Nome</label>
+            <input type="text" class="form-control" id="nome" th:field="*{nome}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{nome}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="descricao">Descrição</label>
+            <textarea class="form-control" id="descricao" rows="3" th:field="*{descricao}" th:errorclass="is-invalid"></textarea>
+            <div class="invalid-feedback" th:errors="*{descricao}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a class="btn btn-outline-secondary" th:href="@{/web/categorias}">Cancelar</a>
+    </form>
+</main>
+</body>
+</html>

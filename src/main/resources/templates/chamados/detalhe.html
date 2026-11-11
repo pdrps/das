@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chamado')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+
+<main class="container py-4">
+    <a class="text-decoration-none" th:href="@{/web/chamados}">&larr; Voltar para a lista</a>
+
+    <div class="d-flex justify-content-between align-items-start my-3">
+        <h1 class="h3 mb-0" th:text="'#' + ${chamado.id} + ' - ' + ${chamado.titulo}">Chamado</h1>
+        <div>
+            <span class="badge" th:text="${chamado.prioridade}"
+                  th:classappend="${chamado.prioridade.name() == 'CRITICA'} ? 'text-bg-danger'
+                      : (${chamado.prioridade.name() == 'ALTA'} ? 'text-bg-warning'
+                      : (${chamado.prioridade.name() == 'MEDIA'} ? 'text-bg-info' : 'text-bg-secondary'))"></span>
+            <span class="badge" th:text="${chamado.status}"
+                  th:classappend="${chamado.status.name() == 'ABERTO'} ? 'text-bg-primary'
+                      : (${chamado.status.name() == 'EM_ATENDIMENTO'} ? 'text-bg-warning'
+                      : (${chamado.status.name() == 'AGUARDANDO_CLIENTE'} ? 'text-bg-info' : 'text-bg-secondary'))"></span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Coluna esquerda: dados e comentários -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">Dados do chamado</div>
+                <div class="card-body">
+                    <p th:text="${chamado.descricao}"></p>
+                    <hr>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Cliente</dt>
+                        <dd class="col-sm-9" th:text="${chamado.clienteNome}"></dd>
+
+                        <dt class="col-sm-3">Categoria</dt>
+                        <dd class="col-sm-9" th:text="${chamado.categoriaNome}"></dd>
+
+                        <dt class="col-sm-3">Técnico</dt>
+                        <dd class="col-sm-9" th:text="${chamado.tecnicoNome != null} ? ${chamado.tecnicoNome} : 'Nenhum atribuído'"></dd>
+
+                        <dt class="col-sm-3">Abertura</dt>
+                        <dd class="col-sm-9" th:text="${#temporals.format(chamado.dataAbertura, 'dd/MM/yyyy HH:mm')}"></dd>
+
+                        <dt class="col-sm-3" th:if="${chamado.dataFechamento != null}">Fechamento</dt>
+                        <dd class="col-sm-9" th:if="${chamado.dataFechamento != null}"
+                            th:text="${#temporals.format(chamado.dataFechamento, 'dd/MM/yyyy HH:mm')}"></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Comentários</div>
+                <div class="card-body">
+                    <p class="text-muted" th:if="${#lists.isEmpty(chamado.comentarios)}">Nenhum comentário ainda.</p>
+
+                    <div class="border-bottom pb-2 mb-3" th:each="c : ${chamado.comentarios}">
+                        <div class="d-flex justify-content-between">
+                            <strong th:text="${c.autor}"></strong>
+                            <small class="text-muted" th:text="${#temporals.format(c.data, 'dd/MM/yyyy HH:mm')}"></small>
+                        </div>
+                        <p class="mb-0" th:text="${c.texto}"></p>
+                    </div>
+
+                    <form method="post" th:action="@{/web/chamados/{id}/comentarios(id=${chamado.id})}"
+                          th:if="${chamado.status.name() != 'FECHADO'}">
+                        <h6 class="mt-3">Novo comentário</h6>
+                        <div class="mb-2">
+                            <input type="text" class="form-control" name="autor" placeholder="Autor"
+                                   maxlength="100" required>
+                        </div>
+                        <div class="mb-2">
+                            <textarea class="form-control" name="texto" rows="3" placeholder="Comentário"
+                                      maxlength="1000" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna direita: ações -->
+        <div class="col-lg-4">
+
+            <div class="alert alert-secondary" th:if="${chamado.status.name() == 'FECHADO'}">
+                Chamado fechado: não é possível alterar, atribuir técnico ou comentar.
+            </div>
+
+            <div class="card mb-3" th:if="${chamado.status.name() != 'FECHADO'}">
+                <div class="card-header">Alterar status</div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/web/chamados/{id}/status(id=${chamado.id})}">
+                        <select class="form-select mb-2" name="status">
+                            <option value="">Selecione...</option>
+                            <option th:each="s : ${statusLista}" th:unless="${s == chamado.status}"
+                                    th:value="${s}" th:text="${s}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Alterar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mb-3" th:if="${chamado.status.name() != 'FECHADO'}">
+                <div class="card-header">Atribuir técnico</div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/web/chamados/{id}/atribuir(id=${chamado.id})}">
+                        <select class="form-select mb-2" name="tecnicoId">
+                            <option value="">Selecione...</option>
+                            <option th:each="t : ${tecnicos}" th:value="${t.id}" th:text="${t.nome}"
+                                    th:selected="${chamado.tecnicoId != null and chamado.tecnicoId == t.id}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Atribuir</button>
+                    </form>
+                </div>
+            </div>
+
+            <form method="post" th:action="@{/web/chamados/{id}/excluir(id=${chamado.id})}"
+                  onsubmit="return confirm('Excluir este chamado?');">
+                <button type="submit" class="btn btn-outline-danger btn-sm">Excluir chamado</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,218 @@
+:root {
+    --pine: #0f4c3a;
+    --pine-dark: #0a3528;
+    --ink: #17231f;
+    --slate: #5a6862;
+    --paper: #f5f8f6;
+    --line: #d9e2dd;
+}
+
+body.home {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Botões */
+.btn-pine,
+.btn-pine-outline {
+    font-weight: 600;
+    padding: 0.7rem 1.5rem;
+    border: 2px solid var(--pine);
+    border-radius: 8px;
+}
+
+.btn-pine {
+    background: var(--pine);
+    color: #fff;
+}
+
+.btn-pine:hover,
+.btn-pine:focus-visible {
+    background: var(--pine-dark);
+    border-color: var(--pine-dark);
+    color: #fff;
+}
+
+.btn-pine-outline {
+    background: transparent;
+    color: var(--pine);
+}
+
+.btn-pine-outline:hover,
+.btn-pine-outline:focus-visible {
+    background: var(--pine);
+    color: #fff;
+}
+
+/* Hero */
+.home-hero {
+    padding: 4.5rem 0 3.5rem;
+}
+
+.home-title {
+    font-size: clamp(2.6rem, 6vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin-bottom: 1.25rem;
+}
+
+.home-lead {
+    font-size: 1.15rem;
+    line-height: 1.55;
+    color: var(--slate);
+    max-width: 32rem;
+}
+
+/* Painel do ciclo de vida */
+.flow-panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 1.75rem;
+}
+
+.flow-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.flow {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.flow::before {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: 12px;
+    bottom: 12px;
+    width: 2px;
+    background: var(--line);
+}
+
+.flow li {
+    position: relative;
+    padding: 0 0 1.4rem 3rem;
+    opacity: 0;
+    animation: etapa-entra 0.5s ease forwards;
+}
+
+.flow li:last-child {
+    padding-bottom: 0;
+}
+
+.flow li:nth-child(1) { animation-delay: 0.1s; }
+.flow li:nth-child(2) { animation-delay: 0.35s; }
+.flow li:nth-child(3) { animation-delay: 0.6s; }
+.flow li:nth-child(4) { animation-delay: 0.85s; }
+
+.flow .dot {
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--c);
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 2px var(--c);
+}
+
+.flow strong {
+    display: block;
+    font-size: 1.05rem;
+}
+
+.flow .desc {
+    color: var(--slate);
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+.s-aberto { --c: #0d6efd; }
+.s-atendimento { --c: #ffc107; }
+.s-aguardando { --c: #0dcaf0; }
+.s-fechado { --c: #6c757d; }
+
+@keyframes etapa-entra {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .flow li {
+        opacity: 1;
+        animation: none;
+    }
+}
+
+/* Cadastros de apoio */
+.cadastros-titulo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.35rem;
+}
+
+.cadastros-sub {
+    color: var(--slate);
+    margin-bottom: 1.5rem;
+}
+
+.cadastros {
+    border-top: 2px solid var(--ink);
+    margin-bottom: 4rem;
+}
+
+.cadastro {
+    display: grid;
+    grid-template-columns: 12rem 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--line);
+    color: inherit;
+    text-decoration: none;
+}
+
+.cadastro-nome {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.cadastro-desc {
+    color: var(--slate);
+}
+
+.cadastro-link {
+    color: var(--pine);
+    font-weight: 600;
+}
+
+.cadastro:hover .cadastro-nome,
+.cadastro:focus-visible .cadastro-nome {
+    color: var(--pine);
+    text-decoration: underline;
+}
+
+.cadastro:focus-visible {
+    outline: 3px solid var(--pine);
+    outline-offset: 2px;
+}
+
+@media (max-width: 767.98px) {
+    .home-hero {
+        padding: 2.5rem 0 2rem;
+    }
+
+    .cadastro {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+}

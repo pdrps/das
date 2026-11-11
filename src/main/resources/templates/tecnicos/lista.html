@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Técnicos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Técnicos</h1>
+        <a class="btn btn-primary" th:href="@{/web/tecnicos/novo}">Novo técnico</a>
+    </div>
+
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Perfil</th>
+                <th class="text-end">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="t : ${tecnicos}">
+                <td th:text="${t.id}"></td>
+                <td th:text="${t.nome}"></td>
+                <td th:text="${t.email}"></td>
+                <td><span class="badge text-bg-secondary" th:text="${t.perfil}"></span></td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary"
+                       th:href="@{/web/tecnicos/{id}/editar(id=${t.id})}">Editar</a>
+                    <form class="d-inline" method="post"
+                          th:action="@{/web/tecnicos/{id}/excluir(id=${t.id})}"
+                          onsubmit="return confirm('Excluir este técnico?');">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(tecnicos)}">
+                <td colspan="5" class="text-center text-muted">Nenhum técnico cadastrado.</td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>
