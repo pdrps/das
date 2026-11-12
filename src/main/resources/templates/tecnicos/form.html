@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Técnico')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4" style="max-width: 640px;">
+    <h1 class="h3 mb-4" th:text="${titulo}">Técnico</h1>
+
+    <form method="post" th:action="@{${action}}" th:object="${form}" novalidate>
+        <div class="mb-3">
+            <label class="form-label" for="nome">Nome</label>
+            <input type="text" class="form-control" id="nome" th:field="*{nome}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{nome}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="email">E-mail</label>
+            <input type="text" class="form-control" id="email" th:field="*{email}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{email}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="perfil">Perfil</label>
+            <select class="form-select" id="perfil" th:field="*{perfil}" th:errorclass="is-invalid">
+                <option value="">Selecione...</option>
+                <option th:each="p : ${perfis}" th:value="${p}" th:text="${p}"></option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{perfil}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a class="btn btn-outline-secondary" th:href="@{/web/tecnicos}">Cancelar</a>
+    </form>
+</main>
+</body>
+</html>
